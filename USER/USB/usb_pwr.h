@@ -1,9 +1,9 @@
 /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
-* File Name          : usb_lib.h
+* File Name          : usb_pwr.h
 * Author             : MCD Application Team
 * Version            : V2.2.0
 * Date               : 06/13/2008
-* Description        : USB library include files
+* Description        : Connection/disconnection & power management header
 ********************************************************************************
 * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
 * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
@@ -14,24 +14,46 @@
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USB_LIB_H
-#define __USB_LIB_H
+#ifndef __USB_PWR_H
+#define __USB_PWR_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "usb_type.h"
-#include "usb_regs.h"
-#include "usb_def.h"
-#include "usb_core.h"
-#include "usb_init.h"
-#include "usb_mem.h"
-#include "usb_int.h"
-
 /* Exported types ------------------------------------------------------------*/
+typedef enum _RESUME_STATE
+{
+  RESUME_EXTERNAL,
+  RESUME_INTERNAL,
+  RESUME_LATER,
+  RESUME_WAIT,
+  RESUME_START,
+  RESUME_ON,
+  RESUME_OFF,
+  RESUME_ESOF
+} RESUME_STATE;
+
+typedef enum _DEVICE_STATE
+{
+  UNCONNECTED,
+  ATTACHED,
+  POWERED,
+  SUSPENDED,
+  ADDRESSED,
+  CONFIGURED
+} DEVICE_STATE;
+
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-/* External variables --------------------------------------------------------*/
+void Suspend(void);
+void Resume_Init(void);
+void Resume(RESUME_STATE eResumeSetVal);
+RESULT PowerOn(void);
+RESULT PowerOff(void);
 
-#endif /* __USB_LIB_H */
+/* External variables --------------------------------------------------------*/
+extern  vu32 bDeviceState; /* USB device status */
+extern volatile bool fSuspendEnabled;  /* true when suspend is possible */
+
+#endif  /*__USB_PWR_H*/
 
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

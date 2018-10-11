@@ -1,9 +1,10 @@
 /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
-* File Name          : usb_lib.h
+* File Name          : usb_int.h
 * Author             : MCD Application Team
 * Version            : V2.2.0
 * Date               : 06/13/2008
-* Description        : USB library include files
+* Description        : Endpoint CTR (Low and High) interrupt's service routines
+*                      prototypes
 ********************************************************************************
 * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
 * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
@@ -14,24 +15,19 @@
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USB_LIB_H
-#define __USB_LIB_H
+#ifndef __USB_INT_H
+#define __USB_INT_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "usb_type.h"
-#include "usb_regs.h"
-#include "usb_def.h"
-#include "usb_core.h"
-#include "usb_init.h"
-#include "usb_mem.h"
-#include "usb_int.h"
-
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+void CTR_LP(void);
+void CTR_HP(void);
+
 /* External variables --------------------------------------------------------*/
 
-#endif /* __USB_LIB_H */
+#endif /* __USB_INT_H */
 
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

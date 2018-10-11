@@ -1,9 +1,9 @@
 /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
-* File Name          : usb_lib.h
+* File Name          : hw_config.h
 * Author             : MCD Application Team
 * Version            : V2.2.0
 * Date               : 06/13/2008
-* Description        : USB library include files
+* Description        : Hardware Configuration & Setup
 ********************************************************************************
 * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
 * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
@@ -14,24 +14,25 @@
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USB_LIB_H
-#define __USB_LIB_H
+#ifndef __HW_CONFIG_H
+#define __HW_CONFIG_H
 
 /* Includes ------------------------------------------------------------------*/
 #include "usb_type.h"
-#include "usb_regs.h"
-#include "usb_def.h"
-#include "usb_core.h"
-#include "usb_init.h"
-#include "usb_mem.h"
-#include "usb_int.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
+/* Exported define -----------------------------------------------------------*/
+#define MASS_MEMORY_START     0x04002000
+#define BULK_MAX_PACKET_SIZE  0x00000040
+#define LED_ON                0xF0
+#define LED_OFF               0xFF
+
 /* Exported functions ------------------------------------------------------- */
+
+
 /* External variables --------------------------------------------------------*/
 
-#endif /* __USB_LIB_H */
-
+#endif  /*__HW_CONFIG_H*/
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/
