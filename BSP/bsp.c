@@ -6,6 +6,7 @@
 #include <stm32f10x_adc.h>
 #include <stm32f10x_dma.h>
 #include <misc.h>
+
 #include "bsp.h"
 
 
@@ -133,36 +134,6 @@ void uart2_putchar(unsigned char data)
   {}
 }
 
-
-
-/*******************************************************************************
-* Function Name  : USART_Configuration
-* Description    : Configure USART1 
-* Input          : None
-* Output         : None
-* Return         : None
-* Attention		 : None
-*******************************************************************************/
-int read_usb_status(void)
-{
-	
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-  CHECK_USB_RCC_TYPE( CHECK_USB_RCC , ENABLE); 						 
-  /**
-  *  LED1 -> PF6 , LED2 -> PF7 , LED3 -> PF8 , LED4 -> PF9
-  */					 
-  GPIO_InitStructure.GPIO_Pin =  CHECK_USB_PIN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; 
-  GPIO_Init(CHECK_USB_GPIO, &GPIO_InitStructure);
-	
-	//printf("PIN 11: %d\r\n",GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_11));
-	//printf("PIN 12: %d\r\n",GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_12));
-	
-	return GPIO_ReadInputDataBit(CHECK_USB_GPIO,CHECK_USB_PIN);
-	//
-}
 
 
 
