@@ -1,23 +1,11 @@
-﻿[![sites](adv/Qi.png)](http://www.qitas.cn)
+﻿# STM32
 
-# STM32
+## 简介
 
-### 项目描述
-
-主要是STM32独立开发的相关资源，使用keil集成库和cubeMX工具开发下可以很省事，但难免有些不尽人意的地方需要额外补足，本项目包括完整独立的工程文件和库，便于定制修改，适合严格管控工程需求
+使用window下Keil-MDK或者Linux下Makefile进行编译开发的工程模板
 
 ---
 
-## 组成
+## 为锻造最美之器
 
-包括标准的驱动库和外设
-
-
----
-## 说明
-
-2018-10-12: 规范相关代码和仓库
-
-
-
-[![sites](adv/qitas.jpg)](http://www.qitas.cn)
+[![sites](qitas/qitas.png)](http://www.qitas.cn)
