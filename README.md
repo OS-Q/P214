@@ -8,4 +8,4 @@
 * 被集成特性
 
 [![sites](qitas/qitas.png)](http://www.qitas.cn)
-## qitas 为锻造最美之器
+## qitas 锻造最美之器
