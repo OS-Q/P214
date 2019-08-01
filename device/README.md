@@ -38,3 +38,11 @@ After this file is installed, physically unplug and reconnect your board.
 
 *  platformio device list [OPTIONS]
 *  pio device list [OPTIONS]
+
+
+### 其他方式
+
+```
+openocd -f interface/stlink-v2.cfg -c "transport select hla_swd" -f target/stm32f4x.cfg
+openocd -f interface/stlink-v2.cfg -c "transport select hla_swd" -f target/stm32f1x.cfg
+```
