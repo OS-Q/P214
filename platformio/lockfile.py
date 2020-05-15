@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import remove
-from os.path import abspath, exists, getmtime
+import os
 from time import sleep, time
 
 from platformio import exception
@@ -26,10 +25,12 @@ LOCKFILE_INTERFACE_MSVCRT = 2
 
 try:
     import fcntl
+
     LOCKFILE_CURRENT_INTERFACE = LOCKFILE_INTERFACE_FCNTL
 except ImportError:
     try:
         import msvcrt
+
         LOCKFILE_CURRENT_INTERFACE = LOCKFILE_INTERFACE_MSVCRT
     except ImportError:
         LOCKFILE_CURRENT_INTERFACE = None
@@ -40,19 +41,18 @@ class LockFileExists(Exception):
 
 
 class LockFile(object):
-
     def __init__(self, path, timeout=LOCKFILE_TIMEOUT, delay=LOCKFILE_DELAY):
         self.timeout = timeout
         self.delay = delay
-        self._lock_path = abspath(path) + ".lock"
+        self._lock_path = os.path.realpath(path) + ".lock"
         self._fp = None
 
     def _lock(self):
-        if not LOCKFILE_CURRENT_INTERFACE and exists(self._lock_path):
+        if not LOCKFILE_CURRENT_INTERFACE and os.path.exists(self._lock_path):
             # remove stale lock
-            if time() - getmtime(self._lock_path) > 10:
+            if time() - os.path.getmtime(self._lock_path) > 10:
                 try:
-                    remove(self._lock_path)
+                    os.remove(self._lock_path)
                 except:  # pylint: disable=bare-except
                     pass
             else:
@@ -92,9 +92,9 @@ class LockFile(object):
 
     def release(self):
         self._unlock()
-        if exists(self._lock_path):
+        if os.path.exists(self._lock_path):
             try:
-                remove(self._lock_path)
+                os.remove(self._lock_path)
             except:  # pylint: disable=bare-except
                 pass
 

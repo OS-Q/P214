@@ -12,16 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-VERSION = (4, 1, "0b1")
+VERSION = (4, 3, 3)
 __version__ = ".".join([str(s) for s in VERSION])
 
 __title__ = "platformio"
 __description__ = (
-    "An open source ecosystem for IoT development. "
-    "Cross-platform IDE and unified debugger. "
-    "Remote unit testing and firmware updates. "
+    "A new generation ecosystem for embedded development. "
+    "Cross-platform IDE and Unified Debugger. "
+    "Static Code Analyzer and Remote Unit Testing. "
+    "Multi-platform and Multi-architecture Build System. "
+    "Firmware File Explorer and Memory Inspection. "
     "Arduino, ARM mbed, Espressif (ESP8266/ESP32), STM32, PIC32, nRF51/nRF52, "
-    "FPGA, CMSIS, SPL, AVR, Samsung ARTIK, libOpenCM3")
+    "RISC-V, FPGA, CMSIS, SPL, AVR, Samsung ARTIK, libOpenCM3"
+)
 __url__ = "https://platformio.org"
 
 __author__ = "PlatformIO"
@@ -31,3 +34,5 @@ __license__ = "Apache Software License"
 __copyright__ = "Copyright 2014-present PlatformIO"
 
 __apiurl__ = "https://api.platformio.org"
+__pioaccount_api__ = "https://api.accounts.platformio.org"
+__pioremote_endpoint__ = "ssl:host=remote.platformio.org:port=4413"

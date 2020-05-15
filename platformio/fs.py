@@ -23,11 +23,10 @@ from glob import glob
 import click
 
 from platformio import exception
-from platformio.compat import WINDOWS, get_file_contents, glob_escape
+from platformio.compat import WINDOWS, glob_escape
 
 
 class cd(object):
-
     def __init__(self, new_path):
         self.new_path = new_path
         self.prev_path = os.getcwd()
@@ -40,7 +39,7 @@ class cd(object):
 
 
 def get_source_dir():
-    curpath = os.path.abspath(__file__)
+    curpath = os.path.realpath(__file__)
     if not os.path.isfile(curpath):
         for p in sys.path:
             if os.path.isfile(os.path.join(p, __file__)):
@@ -65,34 +64,40 @@ def format_filesize(filesize):
     if filesize < base:
         return "%d%s" % (filesize, suffix)
     for i, suffix in enumerate("KMGTPEZY"):
-        unit = base**(i + 2)
+        unit = base ** (i + 2)
         if filesize >= unit:
             continue
-        if filesize % (base**(i + 1)):
+        if filesize % (base ** (i + 1)):
             return "%.2f%sB" % ((base * filesize / unit), suffix)
         break
     return "%d%sB" % ((base * filesize / unit), suffix)
 
 
 def ensure_udev_rules():
-    from platformio.util import get_systype
+    from platformio.util import get_systype  # pylint: disable=import-outside-toplevel
 
     def _rules_to_set(rules_path):
-        return set(l.strip() for l in get_file_contents(rules_path).split("\n")
-                   if l.strip() and not l.startswith("#"))
+        result = set()
+        with open(rules_path) as fp:
+            for line in fp.readlines():
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                result.add(line)
+        return result
 
     if "linux" not in get_systype():
         return None
     installed_rules = [
         "/etc/udev/rules.d/99-platformio-udev.rules",
-        "/lib/udev/rules.d/99-platformio-udev.rules"
+        "/lib/udev/rules.d/99-platformio-udev.rules",
     ]
     if not any(os.path.isfile(p) for p in installed_rules):
         raise exception.MissedUdevRules
 
-    origin_path = os.path.abspath(
-        os.path.join(get_source_dir(), "..", "scripts",
-                     "99-platformio-udev.rules"))
+    origin_path = os.path.realpath(
+        os.path.join(get_source_dir(), "..", "scripts", "99-platformio-udev.rules")
+    )
     if not os.path.isfile(origin_path):
         return None
 
@@ -116,11 +121,10 @@ def path_endswith_ext(path, extensions):
     return False
 
 
-def match_src_files(src_dir, src_filter=None, src_exts=None):
-
+def match_src_files(src_dir, src_filter=None, src_exts=None, followlinks=True):
     def _append_build_item(items, item, src_dir):
         if not src_exts or path_endswith_ext(item, src_exts):
-            items.add(item.replace(src_dir + os.sep, ""))
+            items.add(os.path.relpath(item, src_dir))
 
     src_filter = src_filter or ""
     if isinstance(src_filter, (list, tuple)):
@@ -133,10 +137,9 @@ def match_src_files(src_dir, src_filter=None, src_exts=None):
         items = set()
         for item in glob(os.path.join(glob_escape(src_dir), pattern)):
             if os.path.isdir(item):
-                for root, _, files in os.walk(item, followlinks=True):
+                for root, _, files in os.walk(item, followlinks=followlinks):
                     for f in files:
-                        _append_build_item(items, os.path.join(root, f),
-                                           src_dir)
+                        _append_build_item(items, os.path.join(root, f), src_dir)
             else:
                 _append_build_item(items, item, src_dir)
         if action == "+":
@@ -152,8 +155,16 @@ def to_unix_path(path):
     return re.sub(r"[\\]+", "/", path)
 
 
-def rmtree(path):
+def expanduser(path):
+    """
+    Be compatible with Python 3.8, on Windows skip HOME and check for USERPROFILE
+    """
+    if not WINDOWS or not path.startswith("~") or "USERPROFILE" not in os.environ:
+        return os.path.expanduser(path)
+    return os.environ["USERPROFILE"] + path[1:]
 
+
+def rmtree(path):
     def _onerror(func, path, __):
         try:
             st_mode = os.stat(path).st_mode
@@ -161,9 +172,10 @@ def rmtree(path):
                 os.chmod(path, st_mode | stat.S_IWRITE)
             func(path)
         except Exception as e:  # pylint: disable=broad-except
-            click.secho("%s \nPlease manually remove the file `%s`" %
-                        (str(e), path),
-                        fg="red",
-                        err=True)
+            click.secho(
+                "%s \nPlease manually remove the file `%s`" % (str(e), path),
+                fg="red",
+                err=True,
+            )
 
     return shutil.rmtree(path, onerror=_onerror)

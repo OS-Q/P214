@@ -13,91 +13,83 @@
 # limitations under the License.
 
 import codecs
+import getpass
 import hashlib
 import os
+import platform
+import socket
 import uuid
 from os import environ, getenv, listdir, remove
-from os.path import abspath, dirname, expanduser, isdir, isfile, join
+from os.path import dirname, isdir, isfile, join, realpath
 from time import time
 
 import requests
 
-from platformio import exception, fs, lockfile
-from platformio.compat import (WINDOWS, dump_json_to_unicode,
-                               hashlib_encode_data)
+from platformio import __version__, exception, fs, lockfile
+from platformio.compat import WINDOWS, dump_json_to_unicode, hashlib_encode_data
 from platformio.proc import is_ci
-from platformio.project.helpers import (get_project_cache_dir,
-                                        get_project_core_dir)
-
-
-def get_default_projects_dir():
-    docs_dir = join(expanduser("~"), "Documents")
-    try:
-        assert WINDOWS
-        import ctypes.wintypes
-        buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
-        ctypes.windll.shell32.SHGetFolderPathW(None, 5, None, 0, buf)
-        docs_dir = buf.value
-    except:  # pylint: disable=bare-except
-        pass
-    return join(docs_dir, "PlatformIO", "Projects")
+from platformio.project.helpers import (
+    get_default_projects_dir,
+    get_project_cache_dir,
+    get_project_core_dir,
+)
 
 
 def projects_dir_validate(projects_dir):
     assert isdir(projects_dir)
-    return abspath(projects_dir)
+    return realpath(projects_dir)
 
 
 DEFAULT_SETTINGS = {
     "auto_update_libraries": {
         "description": "Automatically update libraries (Yes/No)",
-        "value": False
+        "value": False,
     },
     "auto_update_platforms": {
         "description": "Automatically update platforms (Yes/No)",
-        "value": False
+        "value": False,
     },
     "check_libraries_interval": {
         "description": "Check for the library updates interval (days)",
-        "value": 7
+        "value": 7,
     },
     "check_platformio_interval": {
         "description": "Check for the new PlatformIO interval (days)",
-        "value": 3
+        "value": 3,
     },
     "check_platforms_interval": {
         "description": "Check for the platform updates interval (days)",
-        "value": 7
+        "value": 7,
     },
     "enable_cache": {
         "description": "Enable caching for API requests and Library Manager",
-        "value": True
+        "value": True,
     },
-    "strict_ssl": {
-        "description": "Strict SSL for PlatformIO Services",
-        "value": False
-    },
+    "strict_ssl": {"description": "Strict SSL for PlatformIO Services", "value": False},
     "enable_telemetry": {
-        "description":
-        ("Telemetry service <http://bit.ly/pio-telemetry> (Yes/No)"),
-        "value": True
+        "description": ("Telemetry service <http://bit.ly/pio-telemetry> (Yes/No)"),
+        "value": True,
     },
     "force_verbose": {
         "description": "Force verbose output when processing environments",
-        "value": False
+        "value": False,
     },
     "projects_dir": {
         "description": "Default location for PlatformIO projects (PIO Home)",
         "value": get_default_projects_dir(),
-        "validator": projects_dir_validate
+        "validator": projects_dir_validate,
     },
 }
 
-SESSION_VARS = {"command_ctx": None, "force_option": False, "caller_id": None}
+SESSION_VARS = {
+    "command_ctx": None,
+    "force_option": False,
+    "caller_id": None,
+    "custom_project_conf": None,
+}
 
 
 class State(object):
-
     def __init__(self, path=None, lock=False):
         self.path = path
         self.lock = lock
@@ -113,8 +105,12 @@ class State(object):
             if isfile(self.path):
                 self._storage = fs.load_json(self.path)
             assert isinstance(self._storage, dict)
-        except (AssertionError, ValueError, UnicodeDecodeError,
-                exception.InvalidJSONFile):
+        except (
+            AssertionError,
+            ValueError,
+            UnicodeDecodeError,
+            exception.InvalidJSONFile,
+        ):
             self._storage = {}
         return self
 
@@ -174,7 +170,6 @@ class State(object):
 
 
 class ContentCache(object):
-
     def __init__(self, cache_dir=None):
         self.cache_dir = None
         self._db_path = None
@@ -207,6 +202,7 @@ class ContentCache(object):
         return True
 
     def get_cache_path(self, key):
+        assert "/" not in key and "\\" not in key
         key = str(key)
         assert len(key) > 3
         return join(self.cache_dir, key[-2:], key)
@@ -277,8 +273,11 @@ class ContentCache(object):
                     continue
                 expire, path = line.split("=")
                 try:
-                    if time() < int(expire) and isfile(path) and \
-                            path not in paths_for_delete:
+                    if (
+                        time() < int(expire)
+                        and isfile(path)
+                        and path not in paths_for_delete
+                    ):
                         newlines.append(line)
                         continue
                 except ValueError:
@@ -317,11 +316,11 @@ def sanitize_setting(name, value):
     defdata = DEFAULT_SETTINGS[name]
     try:
         if "validator" in defdata:
-            value = defdata['validator'](value)
-        elif isinstance(defdata['value'], bool):
+            value = defdata["validator"](value)
+        elif isinstance(defdata["value"], bool):
             if not isinstance(value, bool):
                 value = str(value).lower() in ("true", "yes", "y", "1")
-        elif isinstance(defdata['value'], int):
+        elif isinstance(defdata["value"], int):
             value = int(value)
     except Exception:
         raise exception.InvalidSettingValue(value, name)
@@ -351,24 +350,24 @@ def get_setting(name):
         return sanitize_setting(name, getenv(_env_name))
 
     with State() as state:
-        if "settings" in state and name in state['settings']:
-            return state['settings'][name]
+        if "settings" in state and name in state["settings"]:
+            return state["settings"][name]
 
-    return DEFAULT_SETTINGS[name]['value']
+    return DEFAULT_SETTINGS[name]["value"]
 
 
 def set_setting(name, value):
     with State(lock=True) as state:
         if "settings" not in state:
-            state['settings'] = {}
-        state['settings'][name] = sanitize_setting(name, value)
+            state["settings"] = {}
+        state["settings"][name] = sanitize_setting(name, value)
         state.modified = True
 
 
 def reset_settings():
     with State(lock=True) as state:
         if "settings" in state:
-            del state['settings']
+            del state["settings"]
 
 
 def get_session_var(name, default=None):
@@ -381,11 +380,13 @@ def set_session_var(name, value):
 
 
 def is_disabled_progressbar():
-    return any([
-        get_session_var("force_option"),
-        is_ci(),
-        getenv("PLATFORMIO_DISABLE_PROGRESSBAR") == "true"
-    ])
+    return any(
+        [
+            get_session_var("force_option"),
+            is_ci(),
+            getenv("PLATFORMIO_DISABLE_PROGRESSBAR") == "true",
+        ]
+    )
 
 
 def get_cid():
@@ -397,15 +398,47 @@ def get_cid():
         uid = getenv("C9_UID")
     elif getenv("CHE_API", getenv("CHE_API_ENDPOINT")):
         try:
-            uid = requests.get("{api}/user?token={token}".format(
-                api=getenv("CHE_API", getenv("CHE_API_ENDPOINT")),
-                token=getenv("USER_TOKEN"))).json().get("id")
+            uid = (
+                requests.get(
+                    "{api}/user?token={token}".format(
+                        api=getenv("CHE_API", getenv("CHE_API_ENDPOINT")),
+                        token=getenv("USER_TOKEN"),
+                    )
+                )
+                .json()
+                .get("id")
+            )
         except:  # pylint: disable=bare-except
             pass
     if not uid:
         uid = uuid.getnode()
     cid = uuid.UUID(bytes=hashlib.md5(hashlib_encode_data(uid)).digest())
     cid = str(cid)
-    if WINDOWS or os.getuid() > 0:  # yapf: disable pylint: disable=no-member
+    if WINDOWS or os.getuid() > 0:  # pylint: disable=no-member
         set_state_item("cid", cid)
     return cid
+
+
+def get_user_agent():
+    data = ["PlatformIO/%s" % __version__, "CI/%d" % int(is_ci())]
+    if get_session_var("caller_id"):
+        data.append("Caller/%s" % get_session_var("caller_id"))
+    if os.getenv("PLATFORMIO_IDE"):
+        data.append("IDE/%s" % os.getenv("PLATFORMIO_IDE"))
+    data.append("Python/%s" % platform.python_version())
+    data.append("Platform/%s" % platform.platform())
+    return " ".join(data)
+
+
+def get_host_id():
+    h = hashlib.sha1(hashlib_encode_data(get_cid()))
+    try:
+        username = getpass.getuser()
+        h.update(hashlib_encode_data(username))
+    except:  # pylint: disable=bare-except
+        pass
+    return h.hexdigest()
+
+
+def get_host_name():
+    return str(socket.gethostname())[:255]

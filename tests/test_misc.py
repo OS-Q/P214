@@ -20,13 +20,13 @@ from platformio import exception, util
 
 def test_platformio_cli():
     result = util.exec_command(["pio", "--help"])
-    assert result['returncode'] == 0
-    assert "Usage: pio [OPTIONS] COMMAND [ARGS]..." in result['out']
+    assert result["returncode"] == 0
+    assert "Usage: pio [OPTIONS] COMMAND [ARGS]..." in result["out"]
 
 
 def test_ping_internet_ips():
-    for ip in util.PING_INTERNET_IPS:
-        requests.get("http://%s" % ip, allow_redirects=False, timeout=2)
+    for host in util.PING_REMOTE_HOSTS:
+        requests.get("http://%s" % host, allow_redirects=False, timeout=2)
 
 
 def test_api_internet_offline(without_internet, isolated_pio_home):
@@ -38,5 +38,5 @@ def test_api_cache(monkeypatch, isolated_pio_home):
     api_kwargs = {"url": "/stats", "cache_valid": "10s"}
     result = util.get_api_result(**api_kwargs)
     assert result and "boards" in result
-    monkeypatch.setattr(util, '_internet_on', lambda: False)
+    monkeypatch.setattr(util, "_internet_on", lambda: False)
     assert util.get_api_result(**api_kwargs) == result

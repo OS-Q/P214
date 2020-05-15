@@ -15,25 +15,19 @@
 import codecs
 import os
 import sys
-from os.path import abspath, basename, expanduser, isdir, isfile, join, relpath
+from os.path import basename, isdir, isfile, join, realpath, relpath
 
 import bottle
 
 from platformio import fs, util
-from platformio.compat import get_file_contents
 from platformio.proc import where_is_program
 from platformio.project.config import ProjectConfig
-from platformio.project.helpers import (get_project_lib_dir,
-                                        get_project_libdeps_dir,
-                                        get_project_src_dir,
-                                        load_project_ide_data)
+from platformio.project.helpers import load_project_ide_data
 
 
 class ProjectGenerator(object):
-
     def __init__(self, project_dir, ide, boards):
-        self.config = ProjectConfig.get_instance(
-            join(project_dir, "platformio.ini"))
+        self.config = ProjectConfig.get_instance(join(project_dir, "platformio.ini"))
         self.config.validate()
         self.project_dir = project_dir
         self.ide = str(ide)
@@ -42,8 +36,7 @@ class ProjectGenerator(object):
     @staticmethod
     def get_supported_ides():
         tpls_dir = join(fs.get_source_dir(), "ide", "tpls")
-        return sorted(
-            [d for d in os.listdir(tpls_dir) if isdir(join(tpls_dir, d))])
+        return sorted([d for d in os.listdir(tpls_dir) if isdir(join(tpls_dir, d))])
 
     def get_best_envname(self, boards=None):
         envname = None
@@ -64,6 +57,20 @@ class ProjectGenerator(object):
 
         return envname
 
+    @staticmethod
+    def filter_includes(includes_map, ignore_scopes=None, to_unix_path=True):
+        ignore_scopes = ignore_scopes or []
+        result = []
+        for scope, includes in includes_map.items():
+            if scope in ignore_scopes:
+                continue
+            for include in includes:
+                if to_unix_path:
+                    include = fs.to_unix_path(include)
+                if include not in result:
+                    result.append(include)
+        return result
+
     def _load_tplvars(self):
         tpl_vars = {
             "config": self.config,
@@ -71,45 +78,47 @@ class ProjectGenerator(object):
             "project_name": basename(self.project_dir),
             "project_dir": self.project_dir,
             "env_name": self.env_name,
-            "user_home_dir": abspath(expanduser("~")),
-            "platformio_path":
-                sys.argv[0] if isfile(sys.argv[0])
-                else where_is_program("platformio"),
+            "user_home_dir": realpath(fs.expanduser("~")),
+            "platformio_path": sys.argv[0]
+            if isfile(sys.argv[0])
+            else where_is_program("platformio"),
             "env_path": os.getenv("PATH"),
-            "env_pathsep": os.pathsep
-        }   # yapf: disable
+            "env_pathsep": os.pathsep,
+        }
 
         # default env configuration
         tpl_vars.update(self.config.items(env=self.env_name, as_dict=True))
         # build data
-        tpl_vars.update(
-            load_project_ide_data(self.project_dir, self.env_name) or {})
+        tpl_vars.update(load_project_ide_data(self.project_dir, self.env_name) or {})
 
         with fs.cd(self.project_dir):
-            tpl_vars.update({
-                "src_files": self.get_src_files(),
-                "project_src_dir": get_project_src_dir(),
-                "project_lib_dir": get_project_lib_dir(),
-                "project_libdeps_dir": join(
-                    get_project_libdeps_dir(), self.env_name)
-
-            })  # yapf: disable
+            tpl_vars.update(
+                {
+                    "src_files": self.get_src_files(),
+                    "project_src_dir": self.config.get_optional_dir("src"),
+                    "project_lib_dir": self.config.get_optional_dir("lib"),
+                    "project_libdeps_dir": join(
+                        self.config.get_optional_dir("libdeps"), self.env_name
+                    ),
+                }
+            )
 
         for key, value in tpl_vars.items():
             if key.endswith(("_path", "_dir")):
                 tpl_vars[key] = fs.to_unix_path(value)
-        for key in ("includes", "src_files", "libsource_dirs"):
+        for key in ("src_files", "libsource_dirs"):
             if key not in tpl_vars:
                 continue
             tpl_vars[key] = [fs.to_unix_path(inc) for inc in tpl_vars[key]]
 
-        tpl_vars['to_unix_path'] = fs.to_unix_path
+        tpl_vars["to_unix_path"] = fs.to_unix_path
+        tpl_vars["filter_includes"] = self.filter_includes
         return tpl_vars
 
     def get_src_files(self):
         result = []
         with fs.cd(self.project_dir):
-            for root, _, files in os.walk(get_project_src_dir()):
+            for root, _, files in os.walk(self.config.get_optional_dir("src")):
                 for f in files:
                     result.append(relpath(join(root, f)))
         return result
@@ -135,14 +144,14 @@ class ProjectGenerator(object):
                 dst_dir = join(self.project_dir, tpl_relpath)
                 if not isdir(dst_dir):
                     os.makedirs(dst_dir)
-
             file_name = basename(tpl_path)[:-4]
             contents = self._render_tpl(tpl_path, tpl_vars)
             self._merge_contents(join(dst_dir, file_name), contents)
 
     @staticmethod
     def _render_tpl(tpl_path, tpl_vars):
-        return bottle.template(get_file_contents(tpl_path), **tpl_vars)
+        with codecs.open(tpl_path, "r", encoding="utf8") as fp:
+            return bottle.template(fp.read(), **tpl_vars)
 
     @staticmethod
     def _merge_contents(dst_path, contents):
