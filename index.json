@@ -1,0 +1,7 @@
+{
+    "name":"PlatformIO",
+    "type":"IDE",
+    "base":"*",
+    "url":"https://github.com/OS-Q/S03",
+    "version":"1.0.0"
+}
