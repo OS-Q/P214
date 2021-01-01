@@ -4,6 +4,6 @@
 
 ### [简介](https://github.com/OS-Q/B03/wiki)
 
-[B03](https://github.com/OS-Q/B03) 基于
+[B03](https://github.com/OS-Q/B03) 板级支持 STM32F103C8
 
 ### [Q = (OpenSource & OperatingSystem) ](http://www.OS-Q.com)

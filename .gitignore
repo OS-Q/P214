@@ -1,4 +1,5 @@
 *.pio/
 *.vscode/
 *.map
-.DS_Store
+*.giti*
+*.DS_Store
