@@ -1,22 +1,11 @@
-#ifdef STM32L1
-	#include <stm32l1xx_gpio.h>
-	#include <stm32l1xx_rcc.h>
-	#define LEDPORT (GPIOB)
-	#define LEDPIN (GPIO_Pin_7)
-	#define ENABLE_GPIO_CLOCK (RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE))
-#elif STM32F3
-	#include <stm32f30x_gpio.h>
-	#include <stm32f30x_rcc.h>
-	#define LEDPORT (GPIOE)
-	#define LEDPIN (GPIO_Pin_8)
-	#define ENABLE_GPIO_CLOCK (RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOE, ENABLE))
-#elif STM32F4
-	#include <stm32f4xx_gpio.h>
-	#include <stm32f4xx_rcc.h>
-	#define LEDPORT (GPIOD)
-	#define LEDPIN (GPIO_Pin_12)
-	#define ENABLE_GPIO_CLOCK (RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE))
-#endif
+
+
+#include <stm32f4xx_gpio.h>
+#include <stm32f4xx_rcc.h>
+#define LEDPORT (GPIOA)
+#define LEDPIN (GPIO_Pin_12)
+#define ENABLE_GPIO_CLOCK (RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE))
+
 
 /* timing is not guaranteed :) */
 void simple_delay(uint32_t us)

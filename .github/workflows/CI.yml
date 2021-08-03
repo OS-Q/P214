@@ -10,14 +10,13 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: [3.9]
         example:
-          - "examples/arduino-blink"
-          # - "examples/arduino-external-libs"
-          - "examples/mbed-rtos-blink"
-          - "examples/cmsis-blink"
-          - "examples/libopencm3-blink"
-          - "examples/stm32cube-hal-blink"
-          - "examples/zephyr-blink"
-          - "examples/spl-blink"
+          - "arduino-blink"
+          - "mbed-rtos-blink"
+          - "cmsis-blink"
+          - "libopencm3-blink"
+          - "stm32cube-hal-blink"
+          - "zephyr-blink"
+          - "spl-blink"
 
     runs-on: ${{ matrix.os }}
 
@@ -38,4 +37,4 @@ jobs:
 
       - name: Build examples
         run: |
-          platformio run -d ${{ matrix.example }}
+          platformio run -d examples/${{ matrix.example }}

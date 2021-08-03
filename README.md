@@ -8,6 +8,8 @@
 
 [P214](https://github.com/OS-Q/P214) 用于 [STM32F4](https://www.st.com/zh/microcontrollers-microprocessors/stm32f4-series.html) 系列开发
 
+平台关键特性：系统开发/接口丰富/高性能/资源丰富
+
 | 目标平台 | arduino | cmsis | libopencm3 | mbedos | stm32 hal | zephyr | spl |
 | ------- | ------- | ------ | --------- | --------- | ---------- | ---------- |--------- |
 | [STM32F401RE](https://github.com/SoCXin/STM32F401RE) |  √  |  √  |  √  |  √  |  √ |  √  |  X  |
