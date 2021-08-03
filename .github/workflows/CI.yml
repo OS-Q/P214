@@ -13,12 +13,13 @@ jobs:
           - "examples/arduino-blink"
           # - "examples/arduino-external-libs"
           # - "examples/arduino-internal-libs"
-          # - "examples/cmsis-blink"
-          # - "examples/libopencm3-blink"
+          - "examples/cmsis-blink"
+          - "examples/libopencm3-blink"
           # - "examples/mbed-rtos-blink-baremetal"
-          # - "examples/stm32cube-hal-blink"
+          - "examples/stm32cube-hal-blink"
           # - "examples/stm32cube-hal-eeprom-emulation"
           - "examples/zephyr-blink"
+          - "examples/spl-blink"
 
     runs-on: ${{ matrix.os }}
 
