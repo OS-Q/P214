@@ -8,12 +8,12 @@
 
 [P214](https://github.com/OS-Q/P214) 用于 [STM32F4](https://www.st.com/zh/microcontrollers-microprocessors/stm32f4-series.html) 系列开发
 
-| 目标平台 | arduino | cmsis | libopencm3 | mbedos | stm32 hal | zephyr |
-| ------- | ------- | ------ | --------- | --------- | ---------- | ---------- |
-| [STM32F401RE](https://github.com/SoCXin/STM32F401RE) |  √  |  √  |  √  |  √  |  √ |  √  |
-| [STM32F411RE](https://github.com/SoCXin/STM32F411RE) |  √  |  √  |  √  |  √  |  √ |  √  |
-| [STM32F407VG](https://github.com/SoCXin/STM32F407VG) |  √  |  √  |  √  |  √  |  √ |  √  |
-| [STM32F429ZI](https://github.com/SoCXin/STM32F429ZI) |  √  |  √  |  √  |  √  |  √ |  √  |
-| [STM32F446RE](https://github.com/SoCXin/STM32F446RE) |  √  |  √  |  √  |  √  |  √ |  √  |
+| 目标平台 | arduino | cmsis | libopencm3 | mbedos | stm32 hal | zephyr | spl |
+| ------- | ------- | ------ | --------- | --------- | ---------- | ---------- |--------- |
+| [STM32F401RE](https://github.com/SoCXin/STM32F401RE) |  √  |  √  |  √  |  √  |  √ |  √  |  X  |
+| [STM32F411RE](https://github.com/SoCXin/STM32F411RE) |  √  |  √  |  √  |  √  |  √ |  √  |  X  |
+| [STM32F407VG](https://github.com/SoCXin/STM32F407VG) |  √  |  √  |  √  |  √  |  √ |  √  |  √  |
+| [STM32F429ZI](https://github.com/SoCXin/STM32F429ZI) |  √  |  √  |  √  |  √  |  √ |  √  |  X  |
+| [STM32F446RE](https://github.com/SoCXin/STM32F446RE) |  √  |  √  |  √  |  √  |  √ |  √  |  X  |
 
 #### [源圈OS-Q](http://www.OS-Q.com)
