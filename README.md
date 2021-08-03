@@ -1,9 +1,19 @@
-# [B03](https://github.com/OS-Q/B03)
+﻿# [P214](https://github.com/OS-Q/P214)
 
 [![sites](http://182.61.61.133/link/resources/OSQ.png)](http://www.OS-Q.com)
 
-### [简介](https://github.com/OS-Q/B03/wiki)
+[![Build Status](https://github.com/OS-Q/P214/workflows/CI/badge.svg)](https://github.com/OS-Q/P214/actions/workflows/CI.yml)
 
-[B03](https://github.com/OS-Q/B03) 板级支持 STM32F103C8
+### [简介](https://github.com/OS-Q/P214/wiki)
 
-### [Q = (OpenSource & OperatingSystem) ](http://www.OS-Q.com)
+[P214](https://github.com/OS-Q/P214) 用于 [STM32F4](https://www.st.com/zh/microcontrollers-microprocessors/stm32f4-series.html) 系列开发
+
+| 目标平台 | arduino | cmsis | libopencm3 | mbedos | stm32 hal | zephyr |
+| ------- | ------- | ------ | --------- | --------- | ---------- | ---------- |
+| [STM32F401RE](https://github.com/SoCXin/STM32F401RE) |  √  |  √  |  √  |  √  |  √ |  √  |
+| [STM32F411RE](https://github.com/SoCXin/STM32F411RE) |  √  |  √  |  √  |  √  |  √ |  √  |
+| [STM32F407VG](https://github.com/SoCXin/STM32F407VG) |  √  |  √  |  √  |  √  |  √ |  √  |
+| [STM32F429ZI](https://github.com/SoCXin/STM32F429ZI) |  √  |  √  |  √  |  √  |  √ |  √  |
+| [STM32F446RE](https://github.com/SoCXin/STM32F446RE) |  √  |  √  |  √  |  √  |  √ |  √  |
+
+#### [源圈OS-Q](http://www.OS-Q.com)
