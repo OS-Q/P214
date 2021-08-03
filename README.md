@@ -14,6 +14,5 @@
 | [STM32F411RE](https://github.com/SoCXin/STM32F411RE) |  √  |  √  |  √  |  √  |  √ |  √  |  X  |
 | [STM32F407VG](https://github.com/SoCXin/STM32F407VG) |  √  |  √  |  √  |  √  |  √ |  √  |  √  |
 | [STM32F429ZI](https://github.com/SoCXin/STM32F429ZI) |  √  |  √  |  √  |  √  |  √ |  √  |  X  |
-| [STM32F446RE](https://github.com/SoCXin/STM32F446RE) |  √  |  √  |  √  |  √  |  √ |  √  |  X  |
 
 #### [源圈OS-Q](http://www.OS-Q.com)
