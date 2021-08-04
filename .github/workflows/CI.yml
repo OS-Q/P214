@@ -7,8 +7,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: [3.9]
         example:
           - "arduino-blink"
           - "mbed-rtos-blink"
@@ -17,7 +15,8 @@ jobs:
           - "stm32cube-hal-blink"
           - "zephyr-blink"
           - "spl-blink"
-
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.9]
     runs-on: ${{ matrix.os }}
 
     steps:
