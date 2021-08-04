@@ -8,7 +8,7 @@
     "variant": "STM32F4xx/F407V(E-G)T_F417V(E-G)T",
     "product_line": "STM32F407xx",
     "zephyr": {
-       "variant": "stm32f4_disco"
+      "variant": "stm32f4_disco"
     }
   },
   "debug": {
